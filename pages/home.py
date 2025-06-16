@@ -19,7 +19,7 @@ class Home(Helper):
     chkbox_color = (
         By.XPATH, f"//ul[@aria-labelledby='colorFacet']//li//a[.//span[text()='{data.color}']]")
     items_found = (
-        By.XPATH, "//select[@id='searchSort']/ancestor::span/preceding::span[@class='ns-z' and contains(text(), 'items found')][1]")
+        By.XPATH, "//select[@id='searchSort']/ancestor::span/preceding::span[contains(text(), 'items found')][1]")
     product_desc = (
         By.XPATH, "//*[@id='products']/article/a")
 
