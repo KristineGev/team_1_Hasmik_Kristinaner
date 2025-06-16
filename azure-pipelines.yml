@@ -1,0 +1,44 @@
+trigger:
+- master
+
+pool:
+  vmImage: ubuntu-latest
+
+strategy:
+  matrix:
+    Python311:
+      python.version: '3.11'
+
+steps:
+- task: UsePythonVersion@0
+  inputs:
+    versionSpec: '$(python.version)'
+  displayName: 'Use Python $(python.version)'
+
+- script: |
+
+    python -m pip install --upgrade pip
+    pip install pytest-html
+    pip install -r requirements.txt
+    pip install pytest pytest-azurepipelines allure-pytest
+    npm install -g allure-commandline
+  displayName: 'Install Dependencies'
+
+
+
+- script: |
+    pytest --alluredir=**/allure-results
+  
+  displayName: 'Run Tests'
+
+- task: PublishTestResults@2
+  inputs:
+    testResultsFormat: 'JUnit'
+    testResultsFiles: '**/TEST-*.xml'
+  condition: always() 
+    
+- task: PublishAllureReport@1
+  inputs:
+    allureVersion: '2.25.0'
+    testResultsDir: '**/allure-results'
+  condition: always()
