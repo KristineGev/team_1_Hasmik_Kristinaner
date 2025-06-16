@@ -3,12 +3,16 @@ import pytest
 import logging
 import os
 from datetime import datetime
-# import allure
+from selenium.webdriver.chrome.options import Options
+
+import allure
 
 
 @pytest.fixture()
 def test_driver():
-    driver = webdriver.Chrome()
+    options = Options()
+    options.add_argument("--headless=new")  # new headless mode
+    driver = webdriver.Chrome(options=options)
     driver.maximize_window()
     yield driver
     driver.quit()
@@ -32,3 +36,16 @@ def test_logger(request):
     logger.info(f'{test_name} is started')
     yield logger 
     logger.info(f'{test_name} is finished')
+
+
+
+@pytest.hookimpl(hookwrapper=True)
+def pytest_runtest_makereport(item):
+    outcome = yield
+    result = outcome.get_result()
+    if result.when == "call":
+        if result.outcome == 'failed':
+            allure.attach(
+                item.funcargs.get("test_driver").get_screenshot_as_png(),
+                name=f"{item.name}_screen",
+                attachment_type=allure.attachment_type.PNG)
