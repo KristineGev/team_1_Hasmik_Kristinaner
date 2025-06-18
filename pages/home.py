@@ -73,13 +73,14 @@ class Home(Helper):
                 self.test_logger.error(f"Error extracting product info: {str(e)}")
                 continue
         return product_info
-
+    
     def verify_products_against_filters(self, expected_brand, max_price):
         products = self.get_all_products_info()
         mismatches = []
         self.test_logger.info(f"Verifying {len(products)} products against filters...")
         self.test_logger.info(f"Expected brand: {expected_brand}, Max price: ${max_price:.2f}")
-        for i, product in enumerate(products, 1):
+
+        for product in products:
             errors = []
             if product['brand'].lower() != expected_brand.lower():
                 errors.append(f"Brand: got '{product['brand']}'")
@@ -87,16 +88,18 @@ class Home(Helper):
                 errors.append(f"Price: ${product['price']:.2f} > max ${max_price:.2f}")
             elif not product['price']:
                 errors.append("Price: Could not extract price")
+
             if errors:
-                mismatch_msg = f"Product {i} mismatch - {', '.join(errors)}"
+                mismatch_msg = f"Mismatch in product '{product['full_text']}' - {', '.join(errors)}"
                 self.test_logger.error(mismatch_msg)
                 mismatches.append({
-                    'product': i,
+                    'product_info': product['full_text'],  
                     'errors': errors,
-                    'text': product['full_text']
                 })
+
         if not mismatches:
             self.test_logger.info("All products match filters!")
             return True, []
+
         self.test_logger.error(f"Found {len(mismatches)} mismatches out of {len(products)}")
         return False, mismatches

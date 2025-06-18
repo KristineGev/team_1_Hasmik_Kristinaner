@@ -5,7 +5,7 @@ import os
 from datetime import datetime
 from selenium.webdriver.chrome.options import Options
 
-import allure
+# import allure
 
 
 @pytest.fixture()
@@ -39,13 +39,13 @@ def test_logger(request):
 
 
 
-@pytest.hookimpl(hookwrapper=True)
-def pytest_runtest_makereport(item):
-    outcome = yield
-    result = outcome.get_result()
-    if result.when == "call":
-        if result.outcome == 'failed':
-            allure.attach(
-                item.funcargs.get("test_driver").get_screenshot_as_png(),
-                name=f"{item.name}_screen",
-                attachment_type=allure.attachment_type.PNG)
+# @pytest.hookimpl(hookwrapper=True)
+# def pytest_runtest_makereport(item):
+#     outcome = yield
+#     result = outcome.get_result()
+#     if result.when == "call":
+#         if result.outcome == 'failed':
+#             allure.attach(
+#                 item.funcargs.get("test_driver").get_screenshot_as_png(),
+#                 name=f"{item.name}_screen",
+#                 attachment_type=allure.attachment_type.PNG)
